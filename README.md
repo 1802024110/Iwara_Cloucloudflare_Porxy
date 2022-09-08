@@ -1,15 +1,14 @@
-# 👷 `worker-template` Hello World
-
-A template for kick starting a Cloudflare worker project.
-
-[`index.js`](https://github.com/cloudflare/worker-template/blob/master/index.js) is the content of the Workers script.
-
-#### Wrangler
-
-To generate using [wrangler](https://github.com/cloudflare/wrangler)
-
+# ![IwaraLogo](https://jsdelivr.nodream.cf/gh/1802024110/GitHub_Oss@main/img/IwaraLogo.png) Iwara代理
+# 使用
+安装CF的woker脚手架
 ```
-wrangler generate projectname https://github.com/cloudflare/worker-template
+npm install -g @cloudflare/wrangler
 ```
-
-Further documentation for Wrangler can be found [here](https://developers.cloudflare.com/workers/tooling/wrangler).
+登录cf账户
+```
+wrangler login
+```
+推送至cf
+```
+npm run publish
+```
