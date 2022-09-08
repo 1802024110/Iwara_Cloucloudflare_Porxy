@@ -13,7 +13,7 @@ router.get('/', () => {
 	</tr>
 	<tr>
 			<td>/videos/排序方式/页码</td>
-			<td>排序方式,like,data,view</td>
+			<td>排序方式,likes,date,views</td>
 			<td>返回视频id</td>
 	</tr>
 	<tr>
