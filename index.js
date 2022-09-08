@@ -114,7 +114,7 @@ router.get("/18/videos/:sort/:page", ({ params,url}) => {
 			};
 			const Url = new URL(url)
 			while (a = reg.exec(data)) {
-			let cove = a[2].replace("\/\/ecchi.iwara.tv",Url.hostname).replace("\/\/i.iwara.tv",Url.hostname)
+			let cove = a[2].replace("\/\/ecchi.iwara.tv",Url.hostname).replace("i.iwara.tv",Url.hostname)
 				ids["data"][i] = { name: a[3], playUrl:'https://'+Url.hostname+'/18/file/'+ a[1], cover: 'https://'+cove };
 				i++;
 			}
