@@ -1,0 +1,9 @@
+name = "iwara_porxy"
+type = "javascript"
+
+account_id = ""
+workers_dev = true
+node_compat=true
+route = ""
+zone_id = ""
+compatibility_date = "2022-09-06"

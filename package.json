@@ -1,0 +1,24 @@
+{
+  "private": true,
+  "name": "my-worker",
+  "version": "1.0.0",
+  "description": "A template for kick starting a Cloudflare Workers project",
+  "main": "index.js",
+  "scripts": {
+    "dev": "wrangler dev index.js --local",
+    "publish": "wrangler publish index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier --write '**/*.{js,css,json,md}'"
+  },
+  "author": "noDream <1802024110@qq.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "2.0.23"
+  },
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.12",
+    "http": "^0.0.1-security",
+    "itty-router": "^2.6.1",
+    "request": "^2.88.2"
+  }
+}
