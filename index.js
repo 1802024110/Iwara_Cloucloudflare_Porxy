@@ -1,4 +1,4 @@
-import { Router } from 'itty-router';
+import  Router } from 'itty-router';
 
 const router = Router();
 const baseUrl = 'https://www.iwara.tv'
@@ -95,42 +95,46 @@ router.get('/file/:vid', ({ params }) => {
 // 表区结束
 
 // 里区开始
-router.get("/18/videos/:sort/:page", ({ params,url}) => {
-  const sort = params.sort;
+function getIds(params,url){
+	const sort = params.sort;
   const page = params.page;
   const reg = /<a href="\/videos\/(.*?)"><img src="(.*?)" width="220" height="150" alt=".*?" title="(.*?)" \/>/g;
   const endPage = /<a title=".*?" href="\/videos.*?page=(.*?)">/g;
-	// 同意协议
-	return fetch(baseUrl2+'/section/general').then((res)=>{
-		console.log(res.data);
-		// 请求页面
-		return fetch(`${baseUrl2}/videos?sort=${sort}&page=${page}`).then((res) => res.text()).then((data) => {
-			let a = "";
-			let i = 0;
-			const ids = {
-				"code": 1,
-				"data": {},
-				"limit": null
-			};
-			const Url = new URL(url)
-			while (a = reg.exec(data)) {
-			let cove = a[2].replace("\/\/ecchi.iwara.tv",Url.hostname).replace("i.iwara.tv",Url.hostname)
-				ids["data"][i] = { name: a[3], playUrl:'https://'+Url.hostname+'/18/file/'+ a[1], cover: 'https://'+cove };
-				i++;
+	// 请求页面
+	return fetch(`${baseUrl2}/videos?language=de&sort=${sort}&page=${page}`,{
+
+	}).then((res) => res.text()).then((data) => {
+		let a = "";
+		let i = 0;
+		const ids = {
+			"code": 1,
+			"data": {},
+			"limit": null
+		};
+		const Url = new URL(url)
+		while (a = reg.exec(data)) {
+		let cove = a[2].replace("\/\/ecchi.iwara.tv",Url.hostname).replace("i.iwara.tv",Url.hostname)
+			ids["data"][i] = { name: a[3], playUrl:'https://'+Url.hostname+'/18/file/'+ a[1], cover: 'https://'+cove };
+			i++;
+		}
+		while (a = endPage.exec(data)) {
+			ids["limit"] = a[1];
+		}
+		return ids
+	});
+}
+router.get("/18/videos/:sort/:page", ({ params,url}) => {
+	return getIds(params,url).then((ids)=>{
+		console.log(ids);
+		return new Response(JSON.stringify(ids), {
+			headers: {
+				// "Content-Type": "text/html; charset=utf-8"
+				"Content-Type": "application/json"
 			}
-			while (a = endPage.exec(data)) {
-				ids["limit"] = a[1];
-			}
-			return new Response(JSON.stringify(ids), {
-				headers: {
-					// "Content-Type": "text/html; charset=utf-8"
-					"Content-Type": "application/json"
-				}
-			});
 		});
 	})
   
-});
+	})
 
 router.get('/18/sites/*', (req) => {
 	const source_url = new URL(req.url);
