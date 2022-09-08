@@ -2,6 +2,7 @@ import { Router } from 'itty-router';
 
 const router = Router();
 const baseUrl = 'https://www.iwara.tv'
+const baseUrl2 = 'https://ecchi.iwara.tv'
 
 router.get('/', () => {
 	return new Response(`
@@ -39,6 +40,7 @@ router.get('/', () => {
 	});
 });
 
+// 表区开始
 router.get("/videos/:sort/:page", ({ params,url}) => {
   const sort = params.sort;
   const page = params.page;
@@ -90,7 +92,64 @@ router.get('/file/:vid', ({ params }) => {
 		return fetch('https:'+url)
 	})
 });
+// 表区结束
 
+// 里区开始
+router.get("/18/videos/:sort/:page", ({ params,url}) => {
+  const sort = params.sort;
+  const page = params.page;
+  const reg = /<a href="\/videos\/(.*?)"><img src="(.*?)" width="220" height="150" alt=".*?" title="(.*?)" \/>/g;
+  const endPage = /<a title=".*?" href="\/videos.*?page=(.*?)">/g;
+	// 同意协议
+	fetch(baseUrl2+'/section/general')
+  return fetch(`${baseUrl2}/videos?sort=${sort}&page=${page}`).then((res) => res.text()).then((data) => {
+    let a = "";
+    let i = 0;
+    const ids = {
+      "code": 1,
+      "data": {},
+      "limit": null
+    };
+    const Url = new URL(url)
+    while (a = reg.exec(data)) {
+    const cove = a[2].replace("\/\/ecchi.iwara.tv",Url.hostname)
+      ids["data"][i] = { name: a[3], playUrl:'https://'+Url.hostname+'/18/file/'+ a[1], cover: 'https://'+cove };
+      i++;
+    }
+    while (a = endPage.exec(data)) {
+      ids["limit"] = a[1];
+    }
+    return new Response(JSON.stringify(ids), {
+      headers: {
+        // "Content-Type": "text/html; charset=utf-8"
+        "Content-Type": "application/json"
+      }
+    });
+  });
+});
+
+router.get('/18/sites/*', (req) => {
+	const source_url = new URL(req.url);
+	const path = source_url.pathname
+	return fetch(`https://i.iwara.tv${path}`)
+});
+
+router.get('/18/video/:vid', ({ params }) => {
+	const vid = params.vid
+	return fetch(`${baseUrl2}/api/video/${vid}`)
+});
+
+router.get('/18/file/:vid', ({ params }) => {
+	const vid = params.vid
+	return fetch(`${baseUrl2}/api/video/${vid}`)
+	.then((res)=>res.json())
+	.then(data=>{
+		const url = data[0]["uri"]
+		return fetch('https:'+url)
+	})
+});
+
+// 里区结束
 
 /*
 This is the last route we define, it will match anything that hasn't hit a route we've defined
