@@ -1,4 +1,4 @@
-import  Router } from 'itty-router';
+import  {Router} from 'itty-router';
 
 const router = Router();
 const baseUrl = 'https://www.iwara.tv'
@@ -14,7 +14,7 @@ router.get('/', () => {
 	</tr>
 	<tr>
 			<td>/videos/排序方式/页码</td>
-			<td>排序方式,likes,date,views,页码从0开始</td>
+			<td>排序方式,like,data,view</td>
 			<td>返回视频id</td>
 	</tr>
 	<tr>
@@ -31,6 +31,11 @@ router.get('/', () => {
 			<td>/sites/图片地址</td>
 			<td>将源地址复制即可</td>
 			<td>返回视频的封面</td>
+	</tr>
+	<tr>
+			<td>/search/搜索内容</td>
+			<td>如：洛天依</td>
+			<td>返回搜索的列表</td>
 	</tr>
 </table>
 	`,{
@@ -92,6 +97,39 @@ router.get('/file/:vid', ({ params }) => {
 		return fetch('https:'+url)
 	})
 });
+
+
+router.get('/search/:query', ({ params,url }) => {
+	const Url = new URL(url)
+	const hostname = Url.hostname
+	const query = params.query
+	return fetch(`${baseUrl}/search?query=${query}&f%5B0%5D=type%3Avideo`).then((res) => res.text()).then((data) => {
+		const titleAndCoverReg = /<img src="(.*?)" width="220" height="150" alt=".*?" title="(.*?)" \/>/g
+		const playUrl = /<a href="\/videos\/(.*?)">(.*?)<\/a>/g
+		const endPage =/page=(.*?)">»/g
+		const ids = {
+			'code':1,
+			'data':{},
+			'limit':null
+		}
+		let a=''
+		let b=''
+		let count=0
+		while(a = titleAndCoverReg.exec(data),b=playUrl.exec(data)){
+			let cove = a[1].replace("\/\/ecchi.iwara.tv",hostname).replace("i.iwara.tv",hostname)
+			ids['data'][count] = {name:a[2],playUrl:'https://'+hostname+'/file/'+[b[1]],cover:cove}
+			count++
+		}
+		while (a = endPage.exec(data)) {
+			ids['limit'] = a[1]
+		}
+		return new Response(JSON.stringify(ids), {
+			headers: {
+				"Content-Type": "application/json"
+			}
+		})
+	})
+});
 // 表区结束
 
 // 里区开始
@@ -101,7 +139,7 @@ function getIds(params,url){
   const reg = /<a href="\/videos\/(.*?)"><img src="(.*?)" width="220" height="150" alt=".*?" title="(.*?)" \/>/g;
   const endPage = /<a title=".*?" href="\/videos.*?page=(.*?)">/g;
 	// 请求页面
-	return fetch(`${baseUrl2}/videos?language=de&sort=${sort}&page=${page}`,{
+	return fetch(`${baseUrl2}/videos?&sort=${sort}&page=${page}`,{
 
 	}).then((res) => res.text()).then((data) => {
 		let a = "";
@@ -154,6 +192,38 @@ router.get('/18/file/:vid', ({ params }) => {
 	.then(data=>{
 		const url = data[0]["uri"]
 		return fetch('https:'+url)
+	})
+});
+
+router.get('/18/search/:query', ({ params,url }) => {
+	const Url = new URL(url)
+	const hostname = Url.hostname
+	const query = params.query
+	return fetch(`${baseUrl2}/search?query=${query}&f%5B0%5D=type%3Avideo`).then((res) => res.text()).then((data) => {
+		const titleAndCoverReg = /<img src="(.*?)" width="220" height="150" alt=".*?" title="(.*?)" \/>/g
+		const playUrl = /<a href="\/videos\/(.*?)">(.*?)<\/a>/g
+		const endPage =/page=(.*?)">»/g
+		const ids = {
+			'code':1,
+			'data':{},
+			'limit':null
+		}
+		let a=''
+		let b=''
+		let count=0
+		while(a = titleAndCoverReg.exec(data),b=playUrl.exec(data)){
+			let cove = a[1].replace("\/\/ecchi.iwara.tv",hostname).replace("i.iwara.tv",hostname)
+			ids['data'][count] = {name:a[2],playUrl:'https://'+hostname+'/18/file/'+[b[1]],cover:cove}
+			count++
+		}
+		while (a = endPage.exec(data)) {
+			ids['limit'] = a[1]
+		}
+		return new Response(JSON.stringify(ids), {
+			headers: {
+				"Content-Type": "application/json"
+			}
+		})
 	})
 });
 
